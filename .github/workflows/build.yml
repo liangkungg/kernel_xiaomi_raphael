@@ -56,11 +56,12 @@ jobs:
         run: |
           export CLANG_PATH=$HOME/r547379/bin
           export PATH=${CLANG_PATH}:${PATH}
+          export DTC=usr/bin/dtc
           
           # Use ccache explicitly
           make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="ccache clang" raphael_defconfig
           cd out
-          make ARCH=arm64 DTC=dtc DTC=./scripts/dtc/dtc LLVM=1 LLVM_IAS=1 CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
+          make ARCH=arm64 DTC=usr/bin/dtc LLVM=1 LLVM_IAS=1 CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
 
           # Show ccache stats after build
           ccache --show-stats
