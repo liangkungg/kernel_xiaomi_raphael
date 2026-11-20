@@ -58,7 +58,8 @@ jobs:
           export PATH=${CLANG_PATH}:${PATH}
           
           # Use ccache explicitly
-          make ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="ccache clang" raphael_defconfig
+          make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="ccache clang" raphael_defconfig
+          cd out
           make ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
 
           # Show ccache stats after build
