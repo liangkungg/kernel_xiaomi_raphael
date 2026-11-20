@@ -64,7 +64,7 @@ jobs:
           # Use ccache explicitly
           make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="ccache clang" raphael_defconfig
           cd out
-          make ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="ccache clang" DTC=/usr/bin/dtc -j$(grep -c ^processor /proc/cpuinfo)
+          make ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="ccache clang" DTC=/usr/bin/dtc -j$(grep -c ^processor /proc/cpuinfo) Image.gz dtbo.img
 
           # Show ccache stats after build
           ccache --show-stats
