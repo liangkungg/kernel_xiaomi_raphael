@@ -14,9 +14,9 @@ jobs:
           ref: cnb
 
       - name: Install dependencies
-  run: |
-    sudo apt-get update -qq
-    sudo apt-get install -y -qq device-tree-compiler build-essential libssl-dev bison flex libelf-dev
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq device-tree-compiler build-essential libssl-dev bison flex libelf-dev
 
       - name: Defconfig
         run: |
