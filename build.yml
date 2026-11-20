@@ -1,0 +1,42 @@
+name: Build raphael kernel
+
+on:
+  push:
+    branches: [ cnb ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cnb
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq clang llvm lld libssl-dev dtc bc bison flex git make
+
+      - name: Defconfig
+        run: |
+          make ARCH=arm64 raphael_defconfig
+
+      - name: Build kernel + DTB
+        run: |
+          make ARCH=arm64 CROSS_COMPILE= CROSS_COMPILE_ARM32= CC=clang LD=ld.lld -j$(nproc)
+
+      - name: Package artifacts
+        run: |
+          mkdir -p out
+          cp arch/arm64/boot/Image out/Image
+          cp arch/arm64/boot/dts/qcom/sm8150.dtb out/sm8150.dtb 2>/dev/null || true
+          cp .config out/raphael_defconfig.build
+          ls -lh out/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: raphael-kernel
+          path: out/
+          retention-days: 7
