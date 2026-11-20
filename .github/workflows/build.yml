@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq build-essential libssl-dev bison flex lld clang
+          sudo apt-get install -y -qq build-essential libssl-dev bison flex lld clang llvm
 
       - name: Defconfig
         run: |
@@ -24,7 +24,7 @@ jobs:
 
       - name: Build kernel
         run: |
-          make ARCH=arm64 CROSS_COMPILE= CC=clang LD=ld.lld Image.gz -j$(nproc)
+          make ARCH=arm64 CROSS_COMPILE= CC=clang LD=ld.lld NM=llvm-nm -j$(nproc) Image.gz
 
       - name: Package artifacts
         run: |
