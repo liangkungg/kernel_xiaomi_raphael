@@ -16,37 +16,25 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq device-tree-compiler build-essential libssl-dev bison flex lld clang git
-
-      # 拉取mkdtimg源码本地编译
-      - name: Build mkdtimg
-        run: |
-          git clone https://github.com/osm0sis/mkdtimg.git mkdtimg-src
-          cd mkdtimg-src
-          gcc mkdtimg.c -o ../mkdtimg
-          cd ..
-          chmod +x mkdtimg
+          sudo apt-get install -y -qq build-essential libssl-dev bison flex lld clang
 
       - name: Defconfig
         run: |
           make ARCH=arm64 raphael_defconfig
 
-      - name: Build kernel + DTB
+      - name: Build kernel
         run: |
-          make ARCH=arm64 CROSS_COMPILE= CC=clang LD=ld.lld dtbs -j$(nproc)
           make ARCH=arm64 CROSS_COMPILE= CC=clang LD=ld.lld Image.gz -j$(nproc)
 
-      - name: Pack dtb.img & dtbo.img
+      - name: Package artifacts
         run: |
           mkdir -p out
           cp arch/arm64/boot/Image.gz out/Image.gz
-          ./mkdtimg create out/dtb.img --page_size=4096 arch/arm64/boot/dts/qcom/sm8150*.dtb
-          ./mkdtimg create out/dtbo.img --page_size=4096 arch/arm64/boot/dts/qcom/*.dtbo
           ls -lh out/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: raphael-kernel-three
+          name: raphael-kernel
           path: out/
           retention-days: 7
