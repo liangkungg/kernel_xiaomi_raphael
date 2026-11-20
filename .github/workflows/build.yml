@@ -59,7 +59,7 @@ jobs:
           
           # Use ccache explicitly
           make ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="ccache clang" raphael_defconfig
-          make ARCH=arm64 =1 LLVM_IAS=1 CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
+          make ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
 
           # Show ccache stats after build
           ccache --show-stats
