@@ -16,7 +16,12 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq device-tree-compiler build-essential libssl-dev bison flex libelf-dev
+          sudo apt-get install -y -qq device-tree-compiler build-essential libssl-dev bison flex lld clang wget
+
+      - name: Fetch mkdtimg
+        run: |
+          wget https://github.com/osm0sis/mkdtimg/raw/master/mkdtimg
+          chmod +x mkdtimg
 
       - name: Defconfig
         run: |
@@ -24,19 +29,20 @@ jobs:
 
       - name: Build kernel + DTB
         run: |
-          make ARCH=arm64 CROSS_COMPILE= CROSS_COMPILE_ARM32= CC=clang LD=ld.lld -j$(nproc)
+          make ARCH=arm64 CROSS_COMPILE= CC=clang LD=ld.lld dtbs -j$(nproc)
+          make ARCH=arm64 CROSS_COMPILE= CC=clang LD=ld.lld Image.gz -j$(nproc)
 
-      - name: Package artifacts
+      - name: Pack dtb.img & dtbo.img
         run: |
           mkdir -p out
-          cp arch/arm64/boot/Image out/Image
-          cp arch/arm64/boot/dts/qcom/sm8150.dtb out/sm8150.dtb 2>/dev/null || true
-          cp .config out/raphael_defconfig.build
+          cp arch/arm64/boot/Image.gz out/Image.gz
+          ./mkdtimg create out/dtb.img --page_size=4096 arch/arm64/boot/dts/qcom/sm8150*.dtb
+          ./mkdtimg create out/dtbo.img --page_size=4096 arch/arm64/boot/dts/qcom/*.dtbo
           ls -lh out/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: raphael-kernel
+          name: raphael-kernel-three
           path: out/
           retention-days: 7
