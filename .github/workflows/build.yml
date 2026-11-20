@@ -16,11 +16,15 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq device-tree-compiler build-essential libssl-dev bison flex lld clang wget
+          sudo apt-get install -y -qq device-tree-compiler build-essential libssl-dev bison flex lld clang git
 
-      - name: Fetch mkdtimg
+      # 拉取mkdtimg源码本地编译
+      - name: Build mkdtimg
         run: |
-          wget https://github.com/osm0sis/mkdtimg/raw/master/mkdtimg
+          git clone https://github.com/osm0sis/mkdtimg.git mkdtimg-src
+          cd mkdtimg-src
+          gcc mkdtimg.c -o ../mkdtimg
+          cd ..
           chmod +x mkdtimg
 
       - name: Defconfig
